@@ -6,14 +6,6 @@ struct instruction {
 	char type;
 };
 
-void bin_i(string ins) {
-	cout << "convertendo tipo i...";
-}
-
-void bin_j(string ins) {
-	cout << "convertendo tipo j...";
-}
-
 int main() {
 	instruction* tipos = new instruction[13]{
 		{"beq", 'i'}, {"bne", 'i'}, {"addi", 'i'}, {"addiu", 'i'}, {"slti", 'i'},
@@ -36,4 +28,11 @@ int main() {
 		}
 	}
 
+}
+void bin_i(string ins) {
+	cout << "convertendo tipo i...";
+}
+
+void bin_j(string ins) {
+	cout << "convertendo tipo j...";
 }
