@@ -1,13 +1,7 @@
 #include <iostream>
-#include <fstream>
-#include <cctype>
+#include <string>
 #include <bitset>
 using namespace std;
-
-struct label {
-	string name;
-	int address;
-};
 
 struct instruction {
 	string name;
@@ -22,11 +16,9 @@ struct registradores
 	int codigo;
 };
 
-int Tipo_R(string & linha, instruction * tipos, registradores * regis);
+int main(){
 
-int main() {
-
-	instruction * tipos = new instruction[39]{
+    instruction * tipos = new instruction[39]{
     {"beq", 'i', 0b000100}, {"bne", 'i', 0b000101}, {"addi", 'i', 0b001000}, {"addiu", 'i', 0b001001},
     {"slti", 'i', 0b001010}, {"sltiu", 'i', 0b001011}, {"andi", 'i', 0b001100}, {"ori", 'i', 0b001101},
     {"lui", 'i', 0b001111}, {"lw", 'i', 0b100011}, {"sw", 'i', 0b101011},
@@ -39,7 +31,6 @@ int main() {
     {"mul", 'r', 0b000010}
 	};
 
-
 	registradores * regis = new registradores[32]{
     {"$zero", "$0", 0b00000}, {"$at", "$1", 0b00001}, {"$v0", "$2", 0b00010}, {"$v1", "$3", 0b00011},
     {"$a0", "$4", 0b00100}, {"$a1", "$5", 0b00101}, {"$a2", "$6", 0b00110}, {"$a3", "$7", 0b00111},
@@ -51,61 +42,11 @@ int main() {
     {"$gp", "$28", 0b11100}, {"$sp", "$29", 0b11101}, {"$fp", "$30", 0b11110}, {"$ra", "$31", 0b11111}
 };
 
+    string linha = "add $t0, $t1, $t2";
+    string copia = linha;
 
-	ifstream fin;
-	fin.open("main.asm", ios_base::in);
-
-	if (!fin.is_open()) {
-		cout << "Nao foi possivel abrir o arquivo.\n";
-		exit(1);
-	}
-
-	// vetor de struct label para guardar nome e endereço da label
-	label* labels = new label[50];
-
-	// primeira leitura
-	string str;
-	int linha{1}, tam{};	// variaveis para contagem de linhas do arquivo e quantidade de labels
-	// faz a leitura de cada palavra ate o fim do arquivo
-	while (fin >> str) {
-		char* ch = &str[str.length() - 1];	// ponteiro para o último caractere de cada palavra
-		if (*ch == ':') {					// se o último caractere for ':' guarda a label e o endere�o
-			*ch = '\0';						// substitui ':' por '\0'
-			labels[tam].name = str;			// cada struct vai corresponder a uma label do arquivo
-			labels[tam++].address = linha;	// endereço da label vai ser o valor da linha atual
-		}
-		linha++;
-		char* c = new char[20];
-		fin.getline(c, 20);					// pula para a proxima linha
-		fin.clear();
-		delete[] c;
-	}
-
-	fin.close();
-
-	// segunda leitura
-
-    ifstream fin2;
-	fin2.open("main.asm", ios_base::in);
-
-	if (!fin2.is_open()) {
-		cout << "Nao foi possivel abrir o arquivo.\n";
-		exit(1);
-	}
-
-	string cleitin;
-	
-	getline(fin2, cleitin);
-
-	Tipo_R(cleitin, tipos, regis);
-
-	delete[] tipos;
-	delete[] regis;
-}
-
-int Tipo_R(string & linha, instruction * tipos, registradores * regis) {
-int binario = 0;
-int constante = 0;
+    int binario = 0;
+    int constante = 0;
 
     for (int z = 14; z < 39; ++z) {
         if (linha.find(tipos[z].name) == 0) {
@@ -231,5 +172,11 @@ int constante = 0;
             }
         }
 
-       return binario;
+        cout << linha << endl;
+        bitset<32> binario11(binario);
+        cout << "binario final:" << binario11 << endl;
+        cout << linha << endl;
+
+	
+    return 0;
 }
