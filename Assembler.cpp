@@ -9,46 +9,48 @@ struct label {
 	int address;
 };
 
+struct registradores {
+    string nome;
+    string numero;
+    string codigo;
+};
+
 struct instruction {
-	string name;
-	char type;
-	int funct;
+    string name;
+    bitset<32>(*type)(string, string nome, string linha, registradores*);
+    string funct;
 };
 
-struct registradores
-{
-	string nome;
-	string numero;
-	int codigo;
-};
-
-int Tipo_R(string & linha, instruction * tipos, registradores * regis);
+bitset<32> convertTypeR(string, string funct, string linha, registradores*);
+bitset<32> convertTypeI(string, string funct, string linha, registradores*);
+bitset<32> convertTypeJ(string, string funct, string linha, registradores*);
+string codRegistrador(string , registradores*);
 
 int main() {
 
-	instruction * tipos = new instruction[39]{
-    {"beq", 'i', 0b000100}, {"bne", 'i', 0b000101}, {"addi", 'i', 0b001000}, {"addiu", 'i', 0b001001},
-    {"slti", 'i', 0b001010}, {"sltiu", 'i', 0b001011}, {"andi", 'i', 0b001100}, {"ori", 'i', 0b001101},
-    {"lui", 'i', 0b001111}, {"lw", 'i', 0b100011}, {"sw", 'i', 0b101011},
-    {"j", 'j', 0b000010}, {"jal", 'j', 0b000011}, {"sll", 'r', 0b000000},
-    {"srl", 'r', 0b000010}, {"jr", 'r', 0b001000}, {"mfhi", 'r', 0b010000},
-    {"mflo", 'r', 0b010010}, {"mult", 'r', 0b011000}, {"multu", 'r', 0b011001}, {"div", 'r', 0b011010},
-    {"divu", 'r', 0b011011}, {"add", 'r', 0b100000}, {"addu", 'r', 0b100001},
-    {"sub", 'r', 0b100010}, {"subu", 'r', 0b100011}, {"and", 'r', 0b100100},
-    {"or", 'r', 0b100101}, {"slt", 'r', 0b101010}, {"sltu", 'r', 0b101011},
-    {"mul", 'r', 0b000010}
-	};
+	registradores* regis = new registradores[32]{
+    {"$zero", "$0", "00000"}, {"$at", "$1", "00001"}, {"$v0", "$2", "00010"}, {"$v1", "$3", "00011"},
+    {"$a0", "$4", "00100"}, {"$a1", "$5", "00101"}, {"$a2", "$6", "00110"}, {"$a3", "$7", "00111"},
+    {"$t0", "$8", "01000"}, {"$t1", "$9", "01001"}, {"$t2", "$10", "01010"}, {"$t3", "$11", "01011"},
+    {"$t4", "$12", "01100"}, {"$t5", "$13", "01101"}, {"$t6", "$14", "01110"}, {"$t7", "$15", "01111"},
+    {"$s0", "$16", "10000"}, {"$s1", "$17", "10001"}, {"$s2", "$18", "10010"}, {"$s3", "$19", "10011"},
+    {"$s4", "$20", "10100"}, {"$s5", "$21", "10101"}, {"$s6", "$22", "10110"}, {"$s7", "$23", "10111"},
+    {"$t8", "$24", "11000"}, {"$t9", "$25", "11001"}, {"$k0", "$26", "11010"}, {"$k1", "$27", "11011"},
+    {"$gp", "$28", "11100"}, {"$sp", "$29", "11101"}, {"$fp", "$30", "11110"}, {"$ra", "$31", "11111"}
+    };
 
-
-	registradores * regis = new registradores[32]{
-    {"$zero", "$0", 0b00000}, {"$at", "$1", 0b00001}, {"$v0", "$2", 0b00010}, {"$v1", "$3", 0b00011},
-    {"$a0", "$4", 0b00100}, {"$a1", "$5", 0b00101}, {"$a2", "$6", 0b00110}, {"$a3", "$7", 0b00111},
-    {"$t0", "$8", 0b01000}, {"$t1", "$9", 0b01001}, {"$t2", "$10", 0b01010}, {"$t3", "$11", 0b01011},
-    {"$t4", "$12", 0b01100}, {"$t5", "$13", 0b01101}, {"$t6", "$14", 0b01110}, {"$t7", "$15", 0b01111},
-    {"$s0", "$16", 0b10000}, {"$s1", "$17", 0b10001}, {"$s2", "$18", 0b10010}, {"$s3", "$19", 0b10011},
-    {"$s4", "$20", 0b10100}, {"$s5", "$21", 0b10101}, {"$s6", "$22", 0b10110}, {"$s7", "$23", 0b10111},
-    {"$t8", "$24", 0b11000}, {"$t9", "$25", 0b11001}, {"$k0", "$26", 0b11010}, {"$k1", "$27", 0b11011},
-    {"$gp", "$28", 0b11100}, {"$sp", "$29", 0b11101}, {"$fp", "$30", 0b11110}, {"$ra", "$31", 0b11111}
+	instruction* inst = new instruction[39]{
+    {"beq", convertTypeI, "000100"}, {"bne", convertTypeI, "000101"}, {"addi", convertTypeI, "001000"}, {"addiu", convertTypeI, "001001"},
+    {"slti", convertTypeI, "001010"}, {"sltiu", convertTypeI, "001011"}, {"andi", convertTypeI, "001100"}, {"ori", convertTypeI, "001101"},
+    {"lui", convertTypeI, "001111"}, {"lw", convertTypeI, "100011"}, {"sw", convertTypeI, "101011"},
+    {"j", convertTypeJ, "000010"}, {"jal", convertTypeJ, "000011"},
+    {"sll", convertTypeR, "000000"}, {"srl", convertTypeR, "000010"}, {"jr", convertTypeR, "001000"},
+    {"mfhi", convertTypeR, "010000"}, {"mflo", convertTypeR, "010010"},
+    {"mult", convertTypeR, "011000"}, {"multu", convertTypeR, "011001"}, {"div", convertTypeR, "011010"},
+    {"divu", convertTypeR, "011011"}, {"add", convertTypeR, "100000"}, {"addu", convertTypeR, "100001"},
+    {"sub", convertTypeR, "100010"}, {"subu", convertTypeR, "100011"}, {"and", convertTypeR, "100100"},
+    {"or", convertTypeR, "100101"}, {"slt", convertTypeR, "101010"}, {"sltu", convertTypeR, "101011"},
+    {"mul", convertTypeR, "000010"}
     };
 
 
@@ -93,144 +95,159 @@ int main() {
 		exit(1);
 	}
 
-	string cleitin;
-	
-	getline(fin2, cleitin);
+	string ins{},r{};
 
-    int binario = Tipo_R(cleitin,tipos,regis);
-    bitset<32> binario2(binario);
-	
-    cout << binario << ": " << binario2 << endl;
+    getline(fin2,r);
 
-	delete[] tipos;
+    // Encontra a posição do caractere ' '
+    size_t posDoisPontos = r.find(':');
+    
+    // Se o caractere ':' for encontrado, remove tudo antes dele, ou seja, remove a label e o ":" se tiver
+    if (posDoisPontos != string::npos) {
+        r.erase(0, posDoisPontos + 1);
+
+        while (!r.empty() && isspace(r[0])) {
+        r.erase(0, 1);
+        }
+    }
+
+    ins.assign(r, 0, r.find(' '));
+    bitset<32> codigo;
+
+    for (int i = 0; i < 39; i++) {
+        if (inst[i].name == ins) {
+            codigo = inst[i].type(inst[i].funct,inst[i].name, r, regis);
+            i = 39;
+        }
+    }
+    cout << codigo;
+
+	delete[] inst;
 	delete[] regis;
 }
+bitset<32> convertTypeR(string funct, string nome, string linha, registradores* regis)
+{
+    string binario{}, constante{}, rs{}, rt{}, rd{};
+    bitset<6> opcode(0);
+    bitset<6> opcodeMul(28);
 
-int Tipo_R(string & linha, instruction * tipos, registradores * regis) {
-int binario = 0;
-int constante = 0;
-string instrucao;
+    // Encontra a posição do caractere ' '
+    size_t vazio = linha.find(' ');
+    
+    // Se o caractere ':' for encontrado, remove tudo antes dele
+    if (vazio != string::npos) {
+        linha.erase(0, vazio + 1);
 
-    for (int z = 14; z < 39; ++z) {
-        if (linha.find(tipos[z].name) == 0) {
-		binario = tipos[z].funct;
-        instrucao = tipos[z].name;
+        while (!linha.empty() && isspace(linha[0])) {
+        linha.erase(0, 1);
+        }
+    }
 
-        break;
+	for (int j = 0; linha[j]; j++){
+		if (isdigit(linha[j]) && linha[j - 1] != '$' && linha[j - 2] != '$'){ // evita de pegar constante de instruções que tem número mesmo o tipo R não tendo
+            constante = linha[j];
+            linha[j] = '\0';
+
+			if (isdigit(linha[j + 1]))
+			{
+				constante += linha[j + 1]; // verifica se o próximo também não é uma constante caso tenha tipo 14
+                linha[j] = '\0';
+				break;	
+			}
+			break;
 		}
 	}
-		for (int j = 0; linha[j]; j++){
-			if (isdigit(linha[j]) && linha[j - 1] != '$' && linha[j - 2] != '$'){ // evita de pegar constante de instruções que tem número mesmo o tipo R não tendo
-                constante = stoi(string(1, linha[j]));
 
-				if (isdigit(linha[j + 1]))
-				{
-					constante *= 10;
-					constante += stoi(string(1, linha[j + 1])); // verifica se o próximo também não é uma constante caso tenha tipo 14
-					break;	
-				}
-				break;
-			}
+    bitset<5> immediate(stoi(constante)); // transforma a constante string em binário com 5 bits
+   
+    if (nome != "jr" && nome != "mult" && nome != "multu" && nome != "div" && nome != "divu"){
+
+        rd.assign(linha, 0, linha.find('$')+2);
+
+        linha.erase(0, linha.find_first_not_of('$')+2); 
+
+	    while (!linha.empty() && isspace(linha[0])) {
+        linha.erase(0, 1);
 	    }
+    }
+    
+    if (nome != "mfhi" && nome != "mflo" && nome != "sll" && nome != "srl"){
+        rs.assign(linha, 0, linha.find('$')+2);
 
-    binario = ((constante << 6) | binario); // colocando os bits da constante
+        linha.erase(0, linha.find_first_not_of('$')+2); 
 
-    if (instrucao != "jr" && instrucao != "mult" && instrucao != "multu" && instrucao != "div" && instrucao != "divu"){
-        for (int j = 0; j < 32; ++j) {
-                if (linha.find("$") != string::npos) {
-                    int rd = linha.find("$"); // procura o $
-                    string rd_i;
+        while (!linha.empty() && isspace(linha[0])) {
+        linha.erase(0, 1);
+        }      
+    }
 
-                    rd_i += linha[rd]; // guarda o  $
+    if (nome != "jr" && nome != "mfhi" && nome != "mflo"){
+        rt.assign(linha, 0, linha.find_first_not_of('$')+2);    
+    }
 
-                    linha.replace(rd,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
+    if (nome == "mul")
+    {
+        binario.append(opcodeMul.to_string());
+    }
+    else
+    {
+       binario.append(opcode.to_string());
+    }
+    
+    binario.append(codRegistrador(rs, regis));
+    binario.append(codRegistrador(rt, regis));
+    binario.append(codRegistrador(rd, regis));
+    binario.append(immediate.to_string());
+    binario.append(funct);
 
-                    rd_i += linha[rd+1];
+    bitset<32>binario3(binario);
 
-                    linha.replace(rd+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
+    return binario3;
+}
+bitset<32> convertTypeI(string opcode, string nome, string ins, registradores* regis) {
+    string str{opcode}, rs{}, rt{};
+    cout << str << endl;
+    // pega o primeiro registrador rs
+    ins.erase(0, ins.find(' ') + 1);
+    rs.assign(ins, 0, ins.find(','));
 
-                    if (isdigit(linha[rd+2]))
-                    {
-                        rd_i += linha[rd+2];
-                        linha.replace(rd+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                    }
+    // pega o segundo registrador rt
+    ins.erase(0, ins.find(' ') + 1);
+    rt.assign(ins, 0, ins.find(','));
 
-                    for (int i = 0; i < 32; i++) {
-                        if (rd_i == regis[i].nome || rd_i == regis[i].numero){
-                                binario = ((regis[i].codigo << 11) | binario);
-                                break;
-                        }
-                    }
+    // pega o valor imediato
+    ins.erase(0, ins.find(' ') + 1);
+    bitset<16> immediate(stoi(ins));
+    
+    cout << "rs: " << rs << endl;
+    cout << "rt: " << rt << endl;
+    cout << "im: " << ins << endl;
+    
+    // procura o codigo binario do registrador rs e concatena na string
+    str.append(codRegistrador(rt, regis));
 
-                    break;
-                }
-            }
+    // procura o codigo binario do registrador rt e concatena na string
+    str.append(codRegistrador(rs, regis));
+
+    // concatena o valor imediato
+    str.append(immediate.to_string());
+
+    bitset<32> bit(str);
+    return bit;
+}
+bitset<32> convertTypeJ(string funct, string nome, string linha, registradores* regis)
+{
+
+}
+string codRegistrador(string r, registradores* regis) {
+    // procura e retorna o codigo binario do registrador
+    for (int i = 0; i < 32; i++) {
+        if (r == regis[i].nome) {
+            return regis[i].codigo;
         }
-
-        if (instrucao != "mfhi" && instrucao != "mfhlo"){
-            for (int j = 0; j < 32; ++j) {
-                if (linha.find("$") != string::npos) {
-                    int rs = linha.find("$"); // procura o $
-                    string rs_i;
-
-                    string copia = linha;
-
-                    rs_i += linha[rs]; // guarda o  $
-
-                    linha.replace(rs,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
-
-                    rs_i += linha[rs+1];
-                    
-                    linha.replace(rs+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
-
-                    if (isdigit(linha[rs+2])){
-                        rs_i += linha[rs+2];
-                        linha.replace(rs+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                    }   
-
-                    for (int i = 0; i < 32; i++) {
-                        if (rs_i == regis[i].nome || rs_i == regis[i].numero){
-                                binario = ((regis[i].codigo << 21) | binario);
-                                break;
-                        }
-                    }
-
-                    break;
-                }
-            }
+        else if (r == regis[i].numero) {
+            return regis[i].codigo;
         }
-
-        if (instrucao != "jr" && instrucao != "mfhi" && instrucao != "mfhlo"){
-            for (int j = 0; j < 32; ++j) {
-                if (linha.find("$") != string::npos) {
-                    int rt = linha.find("$"); // procura o $
-                    string rt_i;
-
-                    string copia = linha;
-
-                    rt_i += linha[rt]; // guarda o  $
-
-                    linha.replace(rt,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
-
-                    rt_i += linha[rt+1];
-                    
-                    linha.replace(rt+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
-
-                    if (isdigit(linha[rt+2])){
-                        rt_i += linha[rt+2];
-                        linha.replace(rt+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                    }   
-
-                    for (int i = 0; i < 32; i++) {
-                        if (rt_i == regis[i].nome || rt_i == regis[i].numero){
-                                binario = ((regis[i].codigo << 16) | binario);
-                        }
-                    }
-
-                    break;
-                }
-            }
-        }
-
-       return binario;
+    }
+    return "";
 }
