@@ -49,7 +49,7 @@ int main() {
     {"$s4", "$20", 0b10100}, {"$s5", "$21", 0b10101}, {"$s6", "$22", 0b10110}, {"$s7", "$23", 0b10111},
     {"$t8", "$24", 0b11000}, {"$t9", "$25", 0b11001}, {"$k0", "$26", 0b11010}, {"$k1", "$27", 0b11011},
     {"$gp", "$28", 0b11100}, {"$sp", "$29", 0b11101}, {"$fp", "$30", 0b11110}, {"$ra", "$31", 0b11111}
-};
+    };
 
 
 	ifstream fin;
@@ -97,7 +97,10 @@ int main() {
 	
 	getline(fin2, cleitin);
 
-	Tipo_R(cleitin, tipos, regis);
+    int binario = Tipo_R(cleitin,tipos,regis);
+    bitset<32> binario2(binario);
+	
+    cout << binario << ": " << binario2 << endl;
 
 	delete[] tipos;
 	delete[] regis;
@@ -106,10 +109,13 @@ int main() {
 int Tipo_R(string & linha, instruction * tipos, registradores * regis) {
 int binario = 0;
 int constante = 0;
+string instrucao;
 
     for (int z = 14; z < 39; ++z) {
         if (linha.find(tipos[z].name) == 0) {
 		binario = tipos[z].funct;
+        instrucao = tipos[z].name;
+
         break;
 		}
 	}
@@ -127,107 +133,102 @@ int constante = 0;
 			}
 	    }
 
-    for (int j = 0; j < 32; ++j) {
-            if (linha.find("$") != string::npos) {
-                int rd = linha.find("$"); // procura o $
-                string rd_i;
+    binario = ((constante << 6) | binario); // colocando os bits da constante
 
-                rd_i += linha[rd]; // guarda o  $
-
-                linha.replace(rd,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
-
-                rd_i += linha[rd+1];
-
-                linha.replace(rd+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
-
-                if (isdigit(linha[rd+2]))
-                {
-                    rd_i += linha[rd+2];
-                    linha.replace(rd+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                }
-
-                for (int i = 0; i < 32; i++) {
-                    if (rd_i == regis[i].nome || rd_i == regis[i].numero){
-                            bitset<32> binario12(regis[i].codigo);
-                            cout << "Antes de deslogar RD" << binario12 << endl;
-                            binario = ((regis[i].codigo << 11) | binario);
-                            bitset<32> binario11(binario);
-                            cout << "binario rd:" << binario11 << endl;
-                            break;
-                    }
-                }
-
-                break;
-            }
-        }
-
+    if (instrucao != "jr" && instrucao != "mult" && instrucao != "multu" && instrucao != "div" && instrucao != "divu"){
         for (int j = 0; j < 32; ++j) {
-            if (linha.find("$") != string::npos) {
-                int rs = linha.find("$"); // procura o $
-                string rs_i;
+                if (linha.find("$") != string::npos) {
+                    int rd = linha.find("$"); // procura o $
+                    string rd_i;
 
-                string copia = linha;
+                    rd_i += linha[rd]; // guarda o  $
 
-                rs_i += linha[rs]; // guarda o  $
+                    linha.replace(rd,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
 
-                linha.replace(rs,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
+                    rd_i += linha[rd+1];
 
-                rs_i += linha[rs+1];
-                
-                linha.replace(rs+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
+                    linha.replace(rd+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
 
-                if (isdigit(linha[rs+2])){
-                    rs_i += linha[rs+2];
-                    linha.replace(rs+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                }   
-
-                for (int i = 0; i < 32; i++) {
-                    if (rs_i == regis[i].nome || rs_i == regis[i].numero){
-                            bitset<32> binario12(regis[i].codigo);
-                            cout << "Antes de deslogar Rs" << binario12 << endl;
-                            binario = ((regis[i].codigo << 21) | binario);
-                            bitset<32> binario11(binario);
-                            cout << "binario rs:" << binario11 << endl;
-                            break;
+                    if (isdigit(linha[rd+2]))
+                    {
+                        rd_i += linha[rd+2];
+                        linha.replace(rd+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
                     }
-                }
 
-                break;
+                    for (int i = 0; i < 32; i++) {
+                        if (rd_i == regis[i].nome || rd_i == regis[i].numero){
+                                binario = ((regis[i].codigo << 11) | binario);
+                                break;
+                        }
+                    }
+
+                    break;
+                }
             }
         }
 
-		for (int j = 0; j < 32; ++j) {
-            if (linha.find("$") != string::npos) {
-                int rt = linha.find("$"); // procura o $
-                string rt_i;
+        if (instrucao != "mfhi" && instrucao != "mfhlo"){
+            for (int j = 0; j < 32; ++j) {
+                if (linha.find("$") != string::npos) {
+                    int rs = linha.find("$"); // procura o $
+                    string rs_i;
 
-                string copia = linha;
+                    string copia = linha;
 
-                rt_i += linha[rt]; // guarda o  $
+                    rs_i += linha[rs]; // guarda o  $
 
-                linha.replace(rt,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
+                    linha.replace(rs,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
 
-                rt_i += linha[rt+1];
-                
-                linha.replace(rt+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
+                    rs_i += linha[rs+1];
+                    
+                    linha.replace(rs+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
 
-                if (isdigit(linha[rt+2])){
-                    rt_i += linha[rt+2];
-                    linha.replace(rt+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
-                }   
+                    if (isdigit(linha[rs+2])){
+                        rs_i += linha[rs+2];
+                        linha.replace(rs+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
+                    }   
 
-                for (int i = 0; i < 32; i++) {
-                    if (rt_i == regis[i].nome || rt_i == regis[i].numero){
-                            bitset<32> binario12(regis[i].codigo);
-                            cout << "Antes de deslogar Rt" << binario12 << endl;
-                            binario = ((regis[i].codigo << 16) | binario);
-                            bitset<32> binario11(binario);
-                            cout << "binario rt:" << binario11 << endl;
-                            break;
+                    for (int i = 0; i < 32; i++) {
+                        if (rs_i == regis[i].nome || rs_i == regis[i].numero){
+                                binario = ((regis[i].codigo << 21) | binario);
+                                break;
+                        }
                     }
-                }
 
-                break;
+                    break;
+                }
+            }
+        }
+
+        if (instrucao != "jr" && instrucao != "mfhi" && instrucao != "mfhlo"){
+            for (int j = 0; j < 32; ++j) {
+                if (linha.find("$") != string::npos) {
+                    int rt = linha.find("$"); // procura o $
+                    string rt_i;
+
+                    string copia = linha;
+
+                    rt_i += linha[rt]; // guarda o  $
+
+                    linha.replace(rt,1,"X"); // coloca um X no lugar o $rd para não aparecer novamente
+
+                    rt_i += linha[rt+1];
+                    
+                    linha.replace(rt+1,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XX
+
+                    if (isdigit(linha[rt+2])){
+                        rt_i += linha[rt+2];
+                        linha.replace(rt+2,1,"X"); // coloca um X no lugar do número do registrador para não aparecer novamente XXX
+                    }   
+
+                    for (int i = 0; i < 32; i++) {
+                        if (rt_i == regis[i].nome || rt_i == regis[i].numero){
+                                binario = ((regis[i].codigo << 16) | binario);
+                        }
+                    }
+
+                    break;
+                }
             }
         }
 
