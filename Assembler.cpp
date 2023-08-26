@@ -29,15 +29,14 @@ string codRegistrador(string , registradores*);
 int main() {
 
 	registradores* regis = new registradores[32]{
-    {"$zero", "$0", "00000"}, {"$at", "$1", "00001"}, {"$v0", "$2", "00010"}, {"$v1", "$3", "00011"},
+    {"$zero", "$0","00000"}, {"$at", "$1", "00001"}, {"$v0", "$2", "00010"}, {"$v1", "$3", "00011"},
     {"$a0", "$4", "00100"}, {"$a1", "$5", "00101"}, {"$a2", "$6", "00110"}, {"$a3", "$7", "00111"},
     {"$t0", "$8", "01000"}, {"$t1", "$9", "01001"}, {"$t2", "$10", "01010"}, {"$t3", "$11", "01011"},
     {"$t4", "$12", "01100"}, {"$t5", "$13", "01101"}, {"$t6", "$14", "01110"}, {"$t7", "$15", "01111"},
     {"$s0", "$16", "10000"}, {"$s1", "$17", "10001"}, {"$s2", "$18", "10010"}, {"$s3", "$19", "10011"},
     {"$s4", "$20", "10100"}, {"$s5", "$21", "10101"}, {"$s6", "$22", "10110"}, {"$s7", "$23", "10111"},
     {"$t8", "$24", "11000"}, {"$t9", "$25", "11001"}, {"$k0", "$26", "11010"}, {"$k1", "$27", "11011"},
-    {"$gp", "$28", "11100"}, {"$sp", "$29", "11101"}, {"$fp", "$30", "11110"}, {"$ra", "$31", "11111"}
-    };
+    {"$gp", "$28", "11100"}, {"$sp", "$29", "11101"}, {"$fp", "$30", "11110"}, {"$ra", "$31", "11111"}};
 
 	instruction* inst = new instruction[39]{
     {"beq", convertTypeI, "000100"}, {"bne", convertTypeI, "000101"}, {"addi", convertTypeI, "001000"}, {"addiu", convertTypeI, "001001"},
@@ -120,7 +119,8 @@ int main() {
             i = 39;
         }
     }
-    cout << codigo;
+
+    cout << codigo << endl;
 
 	delete[] inst;
 	delete[] regis;
@@ -130,6 +130,14 @@ bitset<32> convertTypeR(string funct, string nome, string linha, registradores* 
     string binario{}, constante{}, rs{}, rt{}, rd{};
     bitset<6> opcode(0);
     bitset<6> opcodeMul(28);
+
+    size_t pos = linha.find(',');
+
+    // Enquanto houver vírgulas na string, remove-as
+    while (pos != std::string::npos) {
+        linha.erase(pos, 1); // Remove a vírgula na posição 'pos'
+        pos = linha.find(','); // Encontra a próxima vírgula
+    }
 
     // Encontra a posição do caractere ' '
     size_t vazio = linha.find(' ');
@@ -151,20 +159,18 @@ bitset<32> convertTypeR(string funct, string nome, string linha, registradores* 
 			if (isdigit(linha[j + 1]))
 			{
 				constante += linha[j + 1]; // verifica se o próximo também não é uma constante caso tenha tipo 14
-                linha[j] = '\0';
+                linha[j] = '\0';    
 				break;	
 			}
 			break;
 		}
 	}
 
-    bitset<5> immediate(stoi(constante)); // transforma a constante string em binário com 5 bits
-   
     if (nome != "jr" && nome != "mult" && nome != "multu" && nome != "div" && nome != "divu"){
 
-        rd.assign(linha, 0, linha.find('$')+2);
+        rd.assign(linha, 0, linha.find(' '));
 
-        linha.erase(0, linha.find_first_not_of('$')+2); 
+        linha.erase(0, linha.find(' ')+1); 
 
 	    while (!linha.empty() && isspace(linha[0])) {
         linha.erase(0, 1);
@@ -172,9 +178,9 @@ bitset<32> convertTypeR(string funct, string nome, string linha, registradores* 
     }
     
     if (nome != "mfhi" && nome != "mflo" && nome != "sll" && nome != "srl"){
-        rs.assign(linha, 0, linha.find('$')+2);
+        rs.assign(linha, 0, linha.find(' '));
 
-        linha.erase(0, linha.find_first_not_of('$')+2); 
+        linha.erase(0, linha.find(' ')+1); 
 
         while (!linha.empty() && isspace(linha[0])) {
         linha.erase(0, 1);
@@ -182,7 +188,7 @@ bitset<32> convertTypeR(string funct, string nome, string linha, registradores* 
     }
 
     if (nome != "jr" && nome != "mfhi" && nome != "mflo"){
-        rt.assign(linha, 0, linha.find_first_not_of('$')+2);    
+        rt.assign(linha, 0, linha.find(' '));    
     }
 
     if (nome == "mul")
@@ -193,16 +199,46 @@ bitset<32> convertTypeR(string funct, string nome, string linha, registradores* 
     {
        binario.append(opcode.to_string());
     }
-    
-    binario.append(codRegistrador(rs, regis));
-    binario.append(codRegistrador(rt, regis));
-    binario.append(codRegistrador(rd, regis));
+
+	if (rs.empty())
+	{
+        binario.append("00000");
+		
+	}
+	else{
+		binario.append(codRegistrador(rs, regis));
+	}
+
+	if (rt.empty())
+	{
+		binario.append("00000");
+	}
+	else{
+        binario.append(codRegistrador(rt, regis));
+	}
+	
+	if (rd.empty())
+	{
+		binario.append("00000");
+	}
+	else{
+        binario.append(codRegistrador(rd, regis));
+	}
+
+    if (constante.empty()) {
+    bitset<5> immediate(0); 
     binario.append(immediate.to_string());
+    } else {
+    int immediateValue = stoi(constante);
+    bitset<5> immediate(immediateValue);
+    binario.append(immediate.to_string());
+    }
+
     binario.append(funct);
 
-    bitset<32>binario3(binario);
+    bitset<32>binary(binario);
 
-    return binario3;
+    return binary;
 }
 bitset<32> convertTypeI(string opcode, string nome, string ins, registradores* regis) {
     string str{opcode}, rs{}, rt{};
@@ -237,7 +273,6 @@ bitset<32> convertTypeI(string opcode, string nome, string ins, registradores* r
 }
 bitset<32> convertTypeJ(string funct, string nome, string linha, registradores* regis)
 {
-
 }
 string codRegistrador(string r, registradores* regis) {
     // procura e retorna o codigo binario do registrador
