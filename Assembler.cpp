@@ -94,33 +94,83 @@ int main() {
 		exit(1);
 	}
 
-	string ins{},r{};
-
-    getline(fin2,r);
-
-    // Encontra a posição do caractere ' '
-    size_t posDoisPontos = r.find(':');
-    
-    // Se o caractere ':' for encontrado, remove tudo antes dele, ou seja, remove a label e o ":" se tiver
-    if (posDoisPontos != string::npos) {
-        r.erase(0, posDoisPontos + 1);
-
-        while (!r.empty() && isspace(r[0])) {
-        r.erase(0, 1);
-        }
-    }
-
-    ins.assign(r, 0, r.find(' '));
     bitset<32> codigo;
 
-    for (int i = 0; i < 39; i++) {
-        if (inst[i].name == ins) {
-            codigo = inst[i].type(inst[i].funct,inst[i].name, r, regis);
-            i = 39;
+	string ins{},r{};
+
+    while (getline(fin2,r))
+    {
+        // Encontra a posição do caractere '#'
+        size_t posComentario = r.find('#'); 
+
+        if (posComentario != std::string::npos) {
+            r.erase(posComentario); // Remove tudo a partir da posição do caractere '#'
         }
+
+        // Remove espaços em branco no final da linha
+        size_t posUltimoNaoEspaco = r.find_last_not_of(" \t\r\n");
+        if (posUltimoNaoEspaco != std::string::npos) {
+            r.erase(posUltimoNaoEspaco + 1);
+        }
+
+        // Encontra a posição do caractere ' '
+        size_t posDoisPontos = r.find(':');
+        
+        // Se o caractere ':' for encontrado, remove tudo antes dele, ou seja, remove a label e o ":" se tiver
+        if (posDoisPontos != string::npos) {
+            r.erase(0, posDoisPontos + 1);
+
+            while (!r.empty() && isspace(r[0])) {
+            r.erase(0, 1);
+            }
+        }
+
+        while (r[0] == '.'|| r.empty())
+        {
+            getline(fin2,r);
+
+            // Encontra a posição do caractere '#'
+            size_t posComentario = r.find('#'); 
+
+            if (posComentario != std::string::npos) {
+                r.erase(posComentario); // Remove tudo a partir da posição do caractere '#'
+            }
+
+            // Remove espaços em branco no final da linha
+            size_t posUltimoNaoEspaco = r.find_last_not_of(" \t\r\n");
+            if (posUltimoNaoEspaco != std::string::npos) {
+                r.erase(posUltimoNaoEspaco + 1);
+            }
+
+            // Encontra a posição do caractere ' '
+            size_t posDoisPontos = r.find(':');
+            
+            // Se o caractere ':' for encontrado, remove tudo antes dele, ou seja, remove a label e o ":" se tiver
+            if (posDoisPontos != string::npos) {
+                r.erase(0, posDoisPontos + 1);
+
+                while (!r.empty() && isspace(r[0])) {
+                r.erase(0, 1);
+                }
+            }
+        }
+
+        ins.assign(r, 0, r.find(' '));
+
+        cout << r << ": ";
+
+        for (int i = 0; i < 39; i++) {
+
+            if (inst[i].name == ins) {
+                codigo = inst[i].type(inst[i].funct,inst[i].name, r, regis);
+                i = 39;
+            }
+        }
+
+        cout << codigo << endl;
     }
 
-    cout << codigo << endl;
+   
 
 	delete[] inst;
 	delete[] regis;
