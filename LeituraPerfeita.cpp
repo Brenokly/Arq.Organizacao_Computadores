@@ -14,7 +14,6 @@ int main() {
 	}
 
 	string ins{},r{};
-    int i = 1;
 
     while (getline(fin2,r))
     {   
@@ -73,7 +72,7 @@ int main() {
             }
         }
 
-        cout << i++ << " " << r << endl;
+        cout << r << endl;
     }
     
 
