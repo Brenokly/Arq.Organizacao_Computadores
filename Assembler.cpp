@@ -1,23 +1,23 @@
-#include <iostream>
-#include <string>
-#include <bitset>
-#include <fstream>
-using namespace std;
+#include <iostream>  //
+#include <string>    //
+#include <bitset>    // BIBLIOTECAS USADAS
+#include <fstream>   //
+using namespace std; //
 
-struct registradores {
+struct registradores { // Struct que representa um registrador
     string nome;
     string numero;
     string codigo;
 };
 
-struct instruction {
+struct instruction { // Struct que representa uma instrução
     string name;
     bitset<32>(*type)(string, instruction*, registradores*);
     string opcode;
     int endereco;
 };
 
-struct label {
+struct label {      // Struct para guardar as labels
     string name;
     int address;
 };
@@ -25,10 +25,10 @@ struct label {
 label* labels;
 int tam;
 
-string codRegistrador(string r, registradores* regis);
-bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis);
-bitset<32> convertTypeJ(string str, instruction* ins, registradores* regis);
-bitset<32> convertTypeI(string str, instruction* ins, registradores* regis);
+string codRegistrador(string r, registradores* regis);  // Função para retornar o código binário de um registrador
+bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis); // função para converter instrucoes tipo R
+bitset<32> convertTypeJ(string str, instruction* ins, registradores* regis); // função para converter instrucoes tipo J
+bitset<32> convertTypeI(string str, instruction* ins, registradores* regis); // função para converter instrucoes tipo I
 
 int main() {
     registradores* regis = new registradores[32]{
@@ -143,45 +143,47 @@ int main() {
 
 bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis)
 {
-    string binario{}, constante{}, rs{}, rt{}, rd{}, nome{ ins->name }, funct{ ins->opcode };
+    // Variaveis para guardar os valores do registradores, da constante, do opcode e do funct.
+    string binario{},constante{}, rs{}, rt{}, rd{}, nome{ ins->name }, funct{ ins->opcode };
     bitset<6> opcode(0);
     bitset<6> opcodeMul(28);
 
-    size_t pos = linha.find(',');
+    size_t pos = linha.find(','); // Procura a primeira vírgula na linha recebida
 
-    // Enquanto houver vírgulas na string, remove-as
+    // Enquanto houver vírgulas na string, remove-as | add $8,$9,$10 ou add $8, $9, $10
     while (pos != std::string::npos) {
         linha.erase(pos, 1); // Remove a vírgula na posição 'pos'
         pos = linha.find(','); // Encontra a próxima vírgula
     }
 
     // Encontra a posição do caractere ' '
-    size_t vazio = linha.find(' ');
+    size_t vazio = linha.find(' ');  // encontra o primeiro espaço vazio e pega a posição dele
 
-    // Se o caractere ':' for encontrado, remove tudo antes dele
+    // Se o caractere ' ' for encontrado, remove tudo antes dele
     if (vazio != string::npos) {
-        linha.erase(0, vazio + 1);
+        linha.erase(0, vazio + 1); // Limpa a string até o primeiro espaço vazio
 
-        while (!linha.empty() && isspace(linha[0])) {
+        while (!linha.empty() && isspace(linha[0])) { // enquanto tiver espaço antes da string, apaga
             linha.erase(0, 1);
         }
     }
 
-    for (int j = 0; linha[j]; j++) {
+    for (int j = 0; linha[j]; j++) { // percorre cada caracter da linha 
         if (isdigit(linha[j]) && linha[j - 1] != '$' && linha[j - 2] != '$') { // evita de pegar constante de instruções que tem número mesmo o tipo R não tendo
-            constante = linha[j];
-            linha[j] = '\0';
+            constante = linha[j]; // pega a constante
+            linha[j] = '\0'; // coloca o caracter nulo no lugar da constante
 
-            if (isdigit(linha[j + 1]))
+            if (isdigit(linha[j + 1])) // verifica se o próximo também não é uma constante caso tenha tipo 14
             {
-                constante += linha[j + 1]; // verifica se o próximo também não é uma constante caso tenha tipo 14
-                linha[j] = '\0';
-                break;
+                constante += linha[j + 1]; // concatena a constante
+                linha[j] = '\0'; // coloca o caracter nulo no lugar da constante
+                break; // sai do laço
             }
             break;
         }
     }
 
+    // Se a instrução for do tipo R e for jr, mfhi ou mflo, não precisa pegar o registrador rd
     if (nome != "jr" && nome != "mult" && nome != "multu" && nome != "div" && nome != "divu") {
 
         rd.assign(linha, 0, linha.find(' '));
@@ -193,6 +195,7 @@ bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis)
         }
     }
 
+    // Se a instrução for do tipo R e for mfhi ou mflo, não precisa pegar os registradores rs e rt
     if (nome != "mfhi" && nome != "mflo" && nome != "sll" && nome != "srl") {
         rs.assign(linha, 0, linha.find(' '));
 
@@ -203,6 +206,7 @@ bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis)
         }
     }
 
+    // Se a instrução for do tipo R e for sll ou srl, não precisa pegar o registrador rs
     if (nome != "jr" && nome != "mfhi" && nome != "mflo") {
         rt.assign(linha, 0, linha.find(' '));
     }
@@ -241,19 +245,19 @@ bitset<32> convertTypeR(string linha, instruction* ins, registradores* regis)
         binario.append(codRegistrador(rd, regis));
     }
 
-    if (constante.empty()) {
+    if (constante.empty()) { // se não tiver constante, coloca 0
         bitset<5> immediate(0);
         binario.append(immediate.to_string());
     }
-    else {
+    else { // se tiver constante, coloca ela
         int immediateValue = stoi(constante);
         bitset<5> immediate(immediateValue);
         binario.append(immediate.to_string());
     }
 
-    binario.append(funct);
+    binario.append(funct); // coloca o funct
 
-    bitset<32>binary(binario);
+    bitset<32>binary(binario); // converte a string binario para bitset de 32 bits
 
     return binary;
 }
