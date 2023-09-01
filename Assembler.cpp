@@ -77,8 +77,9 @@ int main() {
     while (fin >> str) {
         if (str.back() == ':') {                            // verifica o ultimo caractere
             labels[tam].name.assign(str, 0, str.find(':')); // guarda a label sem o ':'
-            labels[tam++].address = linha++;                // guarda o endereco da label
+            labels[tam++].address = linha;                  // guarda o endereco da label
         }
+        linha++;
         getline(fin, s);     // pula para a proxima linha
     }
 
