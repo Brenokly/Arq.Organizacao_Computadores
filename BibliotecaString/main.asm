@@ -1,7 +1,5 @@
 # Breno Klywer Olegario de Moura
 # Esse arquivo "main.asm" tem a finalidade apenas de testar as bibliotecas implementadas "string.asm".
-# Se tiver comentários sem sentidos provavelmente porquê eu dei ctrl + c e ctrl + v em algum código que dava para 
-# reaproveitar e esqueci de trocar o comentário.
 
 # Observação, o espaço das strings que são lidas não foi alocado dinâmicamente, então conforme for usando o looping
 # o espaço definido vai encher, então se parar ou der erro nas operações é porquê o espaço encheu.
