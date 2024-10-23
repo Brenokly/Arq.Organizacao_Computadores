@@ -41,8 +41,8 @@ struct label {
 
 1. **Clone o repositório**:
    ```bash
-   git clone https://github.com/seuusuario/seurepositorio.git
-   cd seurepositorio
+   git clone https://github.com/seuusuario/AssemblerMips.git
+   cd AssemblerMips.git
    ```
 
 2. **Prepare o arquivo de entrada**:
