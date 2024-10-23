@@ -50,12 +50,12 @@ struct label {
 
 3. **Compile o programa**:
    ```bash
-   g++ -o montador main.cpp
+   g++ -o assembler main.cpp
    ```
 
 4. **Execute o programa**:
    ```bash
-   ./montador
+   ./assembler
    ```
 
 5. **Verifique a saída**:
@@ -67,6 +67,26 @@ struct label {
 - `<string>`: Para manipulação de strings.
 - `<bitset>`: Para manipulação de números binários.
 - `<fstream>`: Para operações de arquivo.
+---
+
+# Biblioteca de Manipulação de Strings para MIPS em Assembler
+
+Este repositório também contém uma biblioteca de manipulação de strings em MIPS, que está localizada no package `BibliotecaString`. As funções criadas são:
+
+### Funções Implementadas
+
+- **Strlen**: Recebe um ponteiro de uma string e retorna a quantidade de caracteres.
+  
+- **Strcmp**: Compara duas strings e retorna um inteiro. 
+  - Se for negativo, a primeira string é menor que a segunda.
+  - Se for positivo, a primeira string é maior que a segunda.
+  - Se for zero, as strings são idênticas.
+  
+- **Strcat**: Concatena a string `src` ao final da string `dest`.
+
+- **Strncat**: Concatena uma determinada quantidade da string `src` no final da string `dest`.
+
+- **Strncpy**: Faz a mesma coisa que a `strcpy`, mas copia apenas os primeiros `count` elementos da `src` para a `dest`.
 
 ## 🙏 Agradecimentos
 
