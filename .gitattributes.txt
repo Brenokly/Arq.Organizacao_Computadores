@@ -1,0 +1,7 @@
+# Ignorar arquivos HTML
+*.html linguagens=
+
+# Indicar que o repositório contém apenas MIPS e C++
+*.asm linguagens=mips
+*.cpp linguagens=c++
+*.h linguagens=c++

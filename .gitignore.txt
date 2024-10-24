@@ -1,0 +1,9 @@
+# Ignorar arquivos HTML (caso existam)
+*.html
+
+# Ignorar arquivos de log, temporários ou de compilação
+*.o
+*.exe
+*.out
+*.tmp
+*.log
