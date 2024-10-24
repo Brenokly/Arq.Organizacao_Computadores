@@ -45,7 +45,7 @@ struct label {
 1. **Clone o repositório**:
 
    ```bash
-   git clone https://github.com/seuusuario/AssemblerMips.git
+   git clone https://github.com/BrenoKly/Arq.Organizacao_Computadores.git
    cd AssemblerMips.git
    ```
 
