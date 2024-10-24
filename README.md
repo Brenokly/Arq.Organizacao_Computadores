@@ -11,6 +11,7 @@ Este é um programa de montador desenvolvido na disciplina de **Arquitetura de O
 ## ⚙️ Estruturas de Dados
 
 ### Registradores
+
 ```cpp
 struct registradores {
     string nome;
@@ -20,6 +21,7 @@ struct registradores {
 ```
 
 ### Instruções
+
 ```cpp
 struct instruction {
     string name;
@@ -30,6 +32,7 @@ struct instruction {
 ```
 
 ### Labels
+
 ```cpp
 struct label {
     string name;
@@ -40,20 +43,24 @@ struct label {
 ## 📂 Como Usar
 
 1. **Clone o repositório**:
+
    ```bash
    git clone https://github.com/seuusuario/AssemblerMips.git
    cd AssemblerMips.git
    ```
 
 2. **Prepare o arquivo de entrada**:
+
    - Crie um arquivo chamado `main.asm` no diretório do projeto com as instruções em assembly.
 
 3. **Compile o programa**:
+
    ```bash
    g++ -o assembler main.cpp
    ```
 
 4. **Execute o programa**:
+
    ```bash
    ./assembler
    ```
@@ -67,6 +74,7 @@ struct label {
 - `<string>`: Para manipulação de strings.
 - `<bitset>`: Para manipulação de números binários.
 - `<fstream>`: Para operações de arquivo.
+
 ---
 
 # Biblioteca de Manipulação de Strings para MIPS em Assembler
@@ -76,12 +84,10 @@ Este repositório também contém uma biblioteca de manipulação de strings em 
 ### Funções Implementadas
 
 - **Strlen**: Recebe um ponteiro de uma string e retorna a quantidade de caracteres.
-  
-- **Strcmp**: Compara duas strings e retorna um inteiro. 
+- **Strcmp**: Compara duas strings e retorna um inteiro.
   - Se for negativo, a primeira string é menor que a segunda.
   - Se for positivo, a primeira string é maior que a segunda.
   - Se for zero, as strings são idênticas.
-  
 - **Strcat**: Concatena a string `src` ao final da string `dest`.
 
 - **Strncat**: Concatena uma determinada quantidade da string `src` no final da string `dest`.
