@@ -1,5 +1,10 @@
 # 🖥️ Programa de Montador em C++
 
+## Disciplina: Arquitetura e Organização de Computadores 📚
+### Curso: Ciência da Computação 💻
+### Universidade: Ufersa - Universidade Federal Rural do Semi-Árido 🌱
+### Ano: 2023 📅
+
 Este é um programa de montador desenvolvido na disciplina de **Arquitetura de Organizações de Computadores** na **UFERSA** (Universidade Federal Rural do Semi-Árido). O objetivo do programa é converter um código assembly em um formato binário que pode ser processado por um computador.
 
 ## 📜 Funcionalidades
@@ -45,7 +50,7 @@ struct label {
 1. **Clone o repositório**:
 
    ```bash
-   git clone https://github.com/seuusuario/AssemblerMips.git
+   git clone https://github.com/BrenoKly/Arq.Organizacao_Computadores.git
    cd AssemblerMips.git
    ```
 
